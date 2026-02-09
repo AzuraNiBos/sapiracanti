@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Perkenalan & Favorit 🤍</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Poppins',sans-serif;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:linear-gradient(135deg,#cce7ff,#e0f7ff);
+  overflow-x:hidden;
+}
+
+/* SECTION */
+.section{
+  width:100%;
+  max-width:360px;
+  padding:20px;
+  text-align:center;
+  display:none;
+}
+.section.active{display:block}
+
+/* CARD */
+.card{
+  background:rgba(255,255,255,.35);
+  backdrop-filter:blur(8px);
+  border-radius:22px;
+  padding:18px;
+  box-shadow:0 8px 20px rgba(0,0,0,.15);
+  animation:fadeUp .8s ease;
+}
+
+/* IMAGE */
+.hero-img{
+  width:170px;
+  border-radius:22px;
+  margin-bottom:16px;
+  box-shadow:0 8px 20px rgba(0,0,0,.2);
+}
+
+/* BUTTONS */
+.btn{
+  display:inline-block;
+  margin-top:16px;
+  padding:10px 26px;
+  border-radius:25px;
+  background:linear-gradient(135deg,#89f7fe,#66a6ff);
+  color:white;
+  text-decoration:none;
+  border:none;
+  font-size:14px;
+  cursor:pointer;
+  box-shadow:0 6px 16px rgba(0,0,0,.2);
+}
+.btn.secondary{
+  background:linear-gradient(135deg,#ff9acb,#8fd3f4);
+}
+
+/* FAVORITE LIST */
+.fav{
+  margin-top:14px;
+  font-size:14px;
+  color:#1c3f66;
+}
+
+/* MUSIC */
+.music-btn{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  border:none;
+  width:46px;height:46px;
+  border-radius:50%;
+  background:#66a6ff;
+  color:white;
+  font-size:18px;
+  cursor:pointer;
+  box-shadow:0 6px 16px rgba(0,0,0,.3);
+}
+.music-btn.playing{animation:spin 2s linear infinite}
+
+.music-progress{
+  position:fixed;
+  bottom:40px;
+  right:80px;
+  width:120px;
+  height:6px;
+  background:rgba(255,255,255,.4);
+  border-radius:10px;
+  overflow:hidden;
+}
+.bar{
+  height:100%;
+  width:0%;
+  background:linear-gradient(135deg,#ff9acb,#8fd3f4);
+}
+
+/* ANIMATION */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(12px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes spin{
+  to{transform:rotate(360deg)}
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= BIO ================= -->
+<section id="bio" class="section active">
+  <div class="card">
+    <img src="image2/IMG-20250408-WA0019.jpg" class="hero-img">
+    <h3>Shaffiraa Putri 🤍</h3>
+    <p style="font-size:13px;margin-top:8px;color:#1c3f66">
+      Aloooo akuu Shaffiraa Putriii🤍 pacarnya dimass hehe.
+      Aku anak pertama, kuat tapi cengeng dikit 😭
+      cerewet, lucu, tengil, tapi selalu cinta pacarku 🤍
+    </p>
+
+    <button class="btn" onclick="show('favorit')">Lihat Favorit ➜</button>
+    <br>
+    <a href="index.html" class="btn secondary">← Kembali ke Intro</a>
+  </div>
+</section>
+
+<!-- ================= FAVORIT ================= -->
+<section id="favorit" class="section">
+  <div class="card">
+    <h3>Favorit Aku 🤍</h3>
+
+    <div class="fav">🍜 Makanan: Mie Ayam, Bakso, Ayammm </div>
+    <div class="fav">🎨 Warna: Biru, Merah</div>
+
+    <div class="fav" style="margin-top:12px">
+      🎵 Playlist Spotify
+      <br>
+      <img src="image/spotify.jpg" style="width:140px;margin-top:8px;border-radius:12px">
+    </div>
+
+    <button class="btn secondary" onclick="show('bio')">← Kembali</button>
+    <br>
+    <a href="gallery.html" class="btn" onclick="goGallery(event)">Ke Gallery ➜</a>
+  </div>
+</section>
+
+<!-- ================= MUSIC ================= -->
+<audio id="music" loop>
+  <source src="music/The_improv_128k.mp3" type="audio/mpeg">
+</audio>
+
+<button class="music-btn" onclick="toggleMusic()">🎵</button>
+<div class="music-progress">
+  <div class="bar" id="bar"></div>
+</div>
+
+<script>
+const music=document.getElementById("music");
+const btn=document.querySelector(".music-btn");
+const bar=document.getElementById("bar");
+let playing=false;
+
+/* LANJUT DARI INDEX 1 */
+if(localStorage.musicTime){
+  music.currentTime=parseFloat(localStorage.musicTime);
+}
+
+music.volume=.4;
+music.play();
+btn.classList.add("playing");
+playing=true;
+
+music.addEventListener("timeupdate",()=>{
+  localStorage.musicTime=music.currentTime;
+  if(music.duration){
+    bar.style.width=(music.currentTime/music.duration*100)+"%";
+  }
+});
+
+/* SEEK */
+document.querySelector(".music-progress").onclick=e=>{
+  const r=e.currentTarget.getBoundingClientRect();
+  music.currentTime=((e.clientX-r.left)/r.width)*music.duration;
+};
+
+function toggleMusic(){
+  playing?music.pause():music.play();
+  btn.classList.toggle("playing");
+  playing=!playing;
+}
+
+/* SECTION SWITCH */
+function show(id){
+  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+/* FADE KE GALLERY */
+function goGallery(e){
+  e.preventDefault();
+  const link=e.currentTarget.href;
+  const fade=setInterval(()=>{
+    if(music.volume>0.05) music.volume-=0.05;
+    else{
+      clearInterval(fade);
+      location.href=link;
+    }
+  },50);
+}
+</script>
+
+</body>
+</html>
